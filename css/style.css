@@ -79,8 +79,8 @@ h2 { font-weight: 300; font-size: clamp(1.75rem, 4.2vw, 2.6rem); line-height: 1.
 .stage { position: relative; aspect-ratio: 16 / 9; background: var(--night); border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), 0 30px 80px -30px color-mix(in srgb, var(--accent) 35%, transparent); transition: box-shadow .4s; }
 .stage iframe, .stage .facade, .stage .facade img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .facade { appearance: none; padding: 0; border: 0; background: var(--night); cursor: pointer; }
-.facade img { object-fit: cover; opacity: .8; transition: opacity .3s, transform .6s; }
-.facade:hover img { opacity: 1; transform: scale(1.02); }
+.facade img { object-fit: cover; opacity: .8; transition: opacity .3s; }
+.facade:hover img { opacity: 1; }
 .facade .play { position: absolute; inset: 0; margin: auto; width: 76px; height: 76px; border-radius: 50%; border: 1.5px solid var(--mist); background: rgba(13,16,25,.45); display: grid; place-items: center; transition: border-color .25s, background .25s; }
 .facade .play::before { content: ""; width: 22px; height: 24px; margin-left: 5px; background: var(--mist); clip-path: polygon(0 0, 100% 50%, 0 100%); }
 .facade:hover .play, .facade:focus-visible .play { border-color: var(--accent); background: rgba(13,16,25,.7); }

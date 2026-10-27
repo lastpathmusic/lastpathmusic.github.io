@@ -8,6 +8,20 @@
   var watch = document.getElementById('watch-link');
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.tabs [role="tab"]'));
 
+  // Try the sharpest YouTube thumbnail first (1280x720), then step down.
+  // A missing size either errors or returns a tiny placeholder, so check width too.
+  function loadThumb(img, id) {
+    var sizes = ['maxresdefault', 'sddefault', 'hqdefault'];
+    var i = 0;
+    function next() {
+      img.onerror = img.onload = null;
+      img.onerror = function () { if (++i < sizes.length) next(); };
+      img.onload = function () { if (img.naturalWidth <= 120 && ++i < sizes.length) next(); };
+      img.src = 'https://i.ytimg.com/vi/' + id + '/' + sizes[i] + '.jpg';
+    }
+    next();
+  }
+
   function show(key) {
     var s = SETS[key];
     section.dataset.mode = key;
@@ -25,7 +39,8 @@
     btn.className = 'facade';
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Play: ' + s.title);
-    btn.innerHTML = '<img alt="" loading="lazy" src="https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg"><span class="play"></span>';
+    btn.innerHTML = '<img alt="" loading="lazy"><span class="play"></span>';
+    loadThumb(btn.firstChild, s.id);
     btn.addEventListener('click', function () {
       var f = document.createElement('iframe');
       f.title = s.title;

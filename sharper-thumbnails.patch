@@ -1,0 +1,50 @@
+diff --git a/css/style.css b/css/style.css
+index 7a45d6b..c436d34 100644
+--- a/css/style.css
++++ b/css/style.css
+@@ -79,8 +79,8 @@ h2 { font-weight: 300; font-size: clamp(1.75rem, 4.2vw, 2.6rem); line-height: 1.
+ .stage { position: relative; aspect-ratio: 16 / 9; background: var(--night); border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), 0 30px 80px -30px color-mix(in srgb, var(--accent) 35%, transparent); transition: box-shadow .4s; }
+ .stage iframe, .stage .facade, .stage .facade img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+ .facade { appearance: none; padding: 0; border: 0; background: var(--night); cursor: pointer; }
+-.facade img { object-fit: cover; opacity: .8; transition: opacity .3s, transform .6s; }
+-.facade:hover img { opacity: 1; transform: scale(1.02); }
++.facade img { object-fit: cover; opacity: .8; transition: opacity .3s; }
++.facade:hover img { opacity: 1; }
+ .facade .play { position: absolute; inset: 0; margin: auto; width: 76px; height: 76px; border-radius: 50%; border: 1.5px solid var(--mist); background: rgba(13,16,25,.45); display: grid; place-items: center; transition: border-color .25s, background .25s; }
+ .facade .play::before { content: ""; width: 22px; height: 24px; margin-left: 5px; background: var(--mist); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+ .facade:hover .play, .facade:focus-visible .play { border-color: var(--accent); background: rgba(13,16,25,.7); }
+diff --git a/js/main.js b/js/main.js
+index b88ee42..b766db2 100644
+--- a/js/main.js
++++ b/js/main.js
+@@ -8,6 +8,20 @@
+   var watch = document.getElementById('watch-link');
+   var tabs = Array.prototype.slice.call(document.querySelectorAll('.tabs [role="tab"]'));
+ 
++  // Try the sharpest YouTube thumbnail first (1280x720), then step down.
++  // A missing size either errors or returns a tiny placeholder, so check width too.
++  function loadThumb(img, id) {
++    var sizes = ['maxresdefault', 'sddefault', 'hqdefault'];
++    var i = 0;
++    function next() {
++      img.onerror = img.onload = null;
++      img.onerror = function () { if (++i < sizes.length) next(); };
++      img.onload = function () { if (img.naturalWidth <= 120 && ++i < sizes.length) next(); };
++      img.src = 'https://i.ytimg.com/vi/' + id + '/' + sizes[i] + '.jpg';
++    }
++    next();
++  }
++
+   function show(key) {
+     var s = SETS[key];
+     section.dataset.mode = key;
+@@ -25,7 +39,8 @@
+     btn.className = 'facade';
+     btn.type = 'button';
+     btn.setAttribute('aria-label', 'Play: ' + s.title);
+-    btn.innerHTML = '<img alt="" loading="lazy" src="https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg"><span class="play"></span>';
++    btn.innerHTML = '<img alt="" loading="lazy"><span class="play"></span>';
++    loadThumb(btn.firstChild, s.id);
+     btn.addEventListener('click', function () {
+       var f = document.createElement('iframe');
+       f.title = s.title;
